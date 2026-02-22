@@ -1,17 +1,14 @@
 <script setup lang="ts">
-import AdminFooter from "@/components/Admin/AdminFooter.vue";
-import AdminHeader from "@/components/Admin/AdminNavbar.vue";
-
+import AdminFooter from '@/components/Admin/AdminFooter.vue';
+import AdminHeader from '@/components/Admin/AdminNavbar.vue';
 </script>
 
 <template>
-    <AdminHeader/>
+    <AdminHeader />
     <div>
-        <slot/>
+        <slot />
     </div>
-    <AdminFooter/>
+    <AdminFooter />
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
