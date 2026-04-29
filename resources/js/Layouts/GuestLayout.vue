@@ -5,8 +5,8 @@ useFlashMessages();
 </script>
 
 <template>
-  <div class="flex min-h-screen flex-col bg-slate-50">
-    <slot/>
+  <div class="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-4">
+    <slot />
   </div>
 </template>
 

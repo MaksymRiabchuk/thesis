@@ -1,17 +1,77 @@
 <script setup lang="ts">
-import AdminFooter from '@/components/Admin/AdminFooter.vue';
-import AdminHeader from '@/components/Admin/AdminNavbar.vue';
-import {useFlashMessages} from "@/composables/useFlashMessages";
+import {Link, useForm} from '@inertiajs/vue3';
+import { LucideSquareArrowRightExit } from 'lucide-vue-next';
+import { LucideSearchX } from 'lucide-vue-next';
+import {route} from 'ziggy-js';
+const navItems = [
+  { name: "Dashboard", href: "/dashboard", isActive:route().current('admin.dashboard')},
+  { name: "Add Offer", href: "/add-offer", isActive:route().current('admin.offers')},
+  { name: "My Listings", href: "/listings", isActive:route().current('admin.offers')},
+  { name: "Settings", href: "/settings", isActive:route().current('admin.settings')},
+];
+const form = useForm('post', route('auth.login'),{});
 
-useFlashMessages();
 </script>
 
 <template>
-  <AdminHeader/>
-  <div>
-    <slot/>
+  <div class="min-h-screen bg-[#f3f4f6] flex font-sans">
+    <aside class="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col">
+      <div class="h-16 flex items-center px-6 border-b border-gray-200">
+          <span class="text-[20px] font-semibold text-[#111827]">
+            RentApp Admin
+          </span>
+      </div>
+
+      <nav class="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+        <Link
+            v-for="(navItem, index) in navItems"
+            :key="`'nav-item-link'-${index}`"
+            :to="navItem.href"
+            class="flex items-center px-3 py-2.5 rounded-xl text-[15px] font-medium transition-colors"
+            :class="navItem.isActive?'bg-[#edf7f0] text-[#369c4e]':'text-gray-600 hover:bg-gray-50 hover:text-gray-900'"
+        >
+          {{navItem.name}}
+        </Link>
+      </nav>
+
+      <div class="p-4 border-t border-gray-200">
+        <div
+            @click="()=>{
+              form.post(route('auth.logout'));
+            }"
+            class="flex items-center px-3 py-2.5 rounded-xl text-[15px] font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+        >
+          <LucideSquareArrowRightExit class="w-5 h-5 mr-2 text-gray-400" />
+          Logout
+        </div>
+      </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 lg:px-8 shrink-0">
+        <div class="flex-1 flex items-center">
+          <div class="max-w-md w-full relative">
+            <LucideSearchX class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+                type="text"
+                placeholder="Search offers, users..."
+                class="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-xl text-[14px] focus:outline-none focus:ring-1 focus:ring-[#3c9f52] focus:border-[#3c9f52]"
+            />
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-4">
+          <div class="w-8 h-8 rounded-full bg-[#369c4e] flex items-center justify-center text-white font-medium text-[14px]">
+            A
+          </div>
+        </div>
+      </header>
+
+      <div class="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
+        <slot/>
+      </div>
+    </main>
   </div>
-  <AdminFooter/>
 </template>
 
 <style scoped></style>

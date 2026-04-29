@@ -15,11 +15,11 @@ export function useFlashMessages() {
         const flash = page.props.flash;
 
         if (flash.success) {
-            toast.success('Success');
+            toast.success(flash.success);
         }
 
         if (flash.error) {
-            toast.error('Error');
+            toast.error(flash.error);
         }
     };
 

@@ -13,9 +13,9 @@ abstract class Controller
         return $redirect->with('success', $message);
     }
 
-    protected function errorMessage(string $message, ?string $route = null): RedirectResponse
+    protected function errorMessage(string $message,array $errors=[], ?string $route = null): RedirectResponse
     {
         $redirect = $route ? redirect()->route($route) : back();
-        return $redirect->with('error', $message);
+        return $redirect->withErrors($errors)->with('error', $message);
     }
 }
