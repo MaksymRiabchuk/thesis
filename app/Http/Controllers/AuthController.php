@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\UpdatePasswordRequest;
+use App\Models\User;
 use App\Services\AuthService;
 use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,7 +34,7 @@ class AuthController extends Controller
 
     public function register(): Response
     {
-        return Inertia::render('Auth/Login');
+        return Inertia::render('Auth/Register');
     }
 
     public function signIn(LoginRequest $request): RedirectResponse
@@ -47,6 +51,27 @@ class AuthController extends Controller
             'password' => 'These credentials do not match our records.',
             'email' => 'These credentials do not match our records.',
         ]);
+    }
+
+    public function signUp(RegisterRequest $request): RedirectResponse
+    {
+        try {
+            $data = $request->validated();
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+            ]);
+
+            event(new Registered($user));
+
+            Auth::guard('web')->login($user);
+            $request->session()->regenerate();
+            return $this->successMessage('Successfully registered!', 'admin.dashboard');
+        } catch (\Exception $exception) {
+            Log::error('AuthController sign up: ' . $exception->getMessage());
+            return $this->errorMessage('Something went wrong, try again later.');
+        }
     }
 
     public function logout(Request $request): RedirectResponse
@@ -80,13 +105,9 @@ class AuthController extends Controller
         ]);
     }
 
-    public function updatePassword(Request $request): RedirectResponse
+    public function updatePassword(UpdatePasswordRequest $request): RedirectResponse
     {
-        $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|min:8|confirmed',
-        ]);
+        $request->validated();
 
         $status = Password::broker()->reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
@@ -102,7 +123,7 @@ class AuthController extends Controller
         );
 
         if ($status === Password::PASSWORD_RESET) {
-            return $this->successMessage('Ваш пароль успішно змінено!', 'auth.login');
+            return $this->successMessage('Password successfully changed!', 'auth.login');
         }
 
         return $this->errorMessage(__($status), [

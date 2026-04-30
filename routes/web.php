@@ -11,6 +11,7 @@ Route::post('/login', [AuthController::class, 'signIn'])->name('auth.sign.in');
 Route::get('/forgot-password', [AuthController::class, 'forgotPassword'])->name('auth.forgot.password');
 Route::post('/forgot-password', [AuthController::class, 'sendPassword'])->name('auth.forgot.send.password');
 Route::get('/register', [AuthController::class, 'register'])->name('auth.register');
+Route::post('/register', [AuthController::class, 'signUp'])->name('auth.sign.up');
 Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 Route::get('/reset-password/{token}', [AuthController::class, 'resetPasswordView'])
     ->middleware('guest')
