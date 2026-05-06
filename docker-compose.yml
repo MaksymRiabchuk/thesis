@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rentapp_app
+    ports:
+      - "8888:8000"
+    volumes:
+      - .:/var/www
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - rentapp_network
+
+  mysql:
+    image: mysql:8.0
+    container_name: rentapp_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: diploma_db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+    ports:
+      - "33306:3307"
+    volumes:
+      - rentapp_db_data:/var/lib/mysql
+    networks:
+      - rentapp_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  rentapp_network:
+    driver: bridge
+
+volumes:
+  rentapp_db_data:

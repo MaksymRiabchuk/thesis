@@ -1,11 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\OffersController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [TestController::class, 'index']);
+Route::get('/', [AuthController::class, 'login']);
 Route::get('/login', [AuthController::class, 'login'])->name('auth.login');
 Route::post('/login', [AuthController::class, 'signIn'])->name('auth.sign.in');
 Route::get('/forgot-password', [AuthController::class, 'forgotPassword'])->name('auth.forgot.password');
@@ -21,7 +22,9 @@ Route::post('/reset-password', [AuthController::class, 'updatePassword'])
     ->middleware('guest')
     ->name('password.store');
 
-Route::prefix('/admin')->group(function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
+Route::prefix('/admin')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('admin.home');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-})->middleware('auth:admin')->name('admin.index');
+    Route::get('/offers', [OffersController::class, 'index'])->name('admin.offers');
+    Route::get('/offers/edit', [OffersController::class, 'edit'])->name('admin.offers.edit');
+})->name('admin.index');

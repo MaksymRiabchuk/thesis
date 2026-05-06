@@ -1,15 +1,40 @@
 <script setup lang="ts">
-import {Link, useForm} from '@inertiajs/vue3';
+import {Link, useForm, usePage} from '@inertiajs/vue3';
 import { LucideSquareArrowRightExit } from 'lucide-vue-next';
 import { LucideSearchX } from 'lucide-vue-next';
 import {route} from 'ziggy-js';
-const navItems = [
-  { name: "Dashboard", href: "/dashboard", isActive:route().current('admin.dashboard')},
-  { name: "Add Offer", href: "/add-offer", isActive:route().current('admin.offers')},
-  { name: "My Listings", href: "/listings", isActive:route().current('admin.offers')},
-  { name: "Settings", href: "/settings", isActive:route().current('admin.settings')},
-];
+import {computed, ref, watch} from "vue";
+import {PageProps} from "@/types";
+
 const form = useForm('post', route('auth.login'),{});
+const page = usePage<PageProps>();
+const user = page.props.auth.user;
+
+const isAdmin = computed(() => user?.roles.includes('admin'));
+const canManageUsers = computed(() => user?.permissions.includes('manage users'));
+
+const navItems = computed(() => {
+  return [
+    {
+      name: "Dashboard",
+      href: route('admin.dashboard'),
+      isActive: route().current('admin.dashboard'),
+      isVisible: true
+    },
+    {
+      name: "Offers",
+      href: route('admin.offers'),
+      isActive: route().current('admin.offers'),
+      isVisible: isAdmin.value
+    },
+    {
+      name: "Add Offer",
+      href: route('admin.offers.edit'),
+      isActive: route().current('admin.offers.edit'),
+      isVisible: isAdmin.value
+    },
+  ];
+});
 
 </script>
 
@@ -26,7 +51,8 @@ const form = useForm('post', route('auth.login'),{});
         <Link
             v-for="(navItem, index) in navItems"
             :key="`'nav-item-link'-${index}`"
-            :to="navItem.href"
+            :href="navItem.href"
+            v-show="navItem.isVisible"
             class="flex items-center px-3 py-2.5 rounded-xl text-[15px] font-medium transition-colors"
             :class="navItem.isActive?'bg-[#edf7f0] text-[#369c4e]':'text-gray-600 hover:bg-gray-50 hover:text-gray-900'"
         >
