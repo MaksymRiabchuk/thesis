@@ -10,10 +10,11 @@ const form = useForm('post', route('auth.login'),{});
 const page = usePage<PageProps>();
 const user = page.props.auth.user;
 
-const isAdmin = computed(() => user?.roles.includes('admin'));
-const canManageUsers = computed(() => user?.permissions.includes('manage users'));
+// const isAdmin = computed(() => user?.roles.includes('admin'));
+// const canManageUsers = computed(() => user?.permissions.includes('manage users'));
 
 const navItems = computed(() => {
+  const _url = page.url;
   return [
     {
       name: "Dashboard",
@@ -25,13 +26,13 @@ const navItems = computed(() => {
       name: "Offers",
       href: route('admin.offers'),
       isActive: route().current('admin.offers'),
-      isVisible: isAdmin.value
+      isVisible: true
     },
     {
       name: "Add Offer",
       href: route('admin.offers.edit'),
       isActive: route().current('admin.offers.edit'),
-      isVisible: isAdmin.value
+      isVisible: true
     },
   ];
 });
@@ -65,7 +66,7 @@ const navItems = computed(() => {
             @click="()=>{
               form.post(route('auth.logout'));
             }"
-            class="flex items-center px-3 py-2.5 rounded-xl text-[15px] font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+            class="flex items-center cursor-pointer px-3 py-2.5 rounded-xl text-[15px] font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
         >
           <LucideSquareArrowRightExit class="w-5 h-5 mr-2 text-gray-400" />
           Logout
