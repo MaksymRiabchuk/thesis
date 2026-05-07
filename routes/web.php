@@ -22,7 +22,7 @@ Route::post('/reset-password', [AuthController::class, 'updatePassword'])
     ->middleware('guest')
     ->name('password.store');
 
-Route::prefix('/admin')->middleware(['auth', 'role:admin'])->group(function () {
+Route::prefix('/admin')->middleware(['auth'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('admin.home');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/offers', [OffersController::class, 'index'])->name('admin.offers');

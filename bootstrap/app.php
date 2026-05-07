@@ -29,7 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (UnauthorizedException $e, Request $request) {
-            return redirect()->route('admin.dashboard')
+            return redirect('/')
                 ->with('error', 'You are not allowed to access this page');
         });
     })->create();

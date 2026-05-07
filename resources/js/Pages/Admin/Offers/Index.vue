@@ -83,7 +83,7 @@ const mockOffers = [
                   :href="route('admin.offers.edit')"
               >
 
-                <Edit3Icon class="w-3 h-3"/>
+                <Edit3Icon class="w-3 h-3 ml-auto mr-4"/>
               </Link>
             </td>
           </tr>
@@ -101,7 +101,7 @@ const mockOffers = [
             Previous
           </button>
           <button
-              class="px-3 py-1 text-[13px] font-medium text-gray-600 bg-white border border-gray-200 rounded-[6px] hover:bg-gray-50">
+              class="px-3 py-1 text-[13px] font-medium cursor-pointer text-gray-600 bg-white border border-gray-200 rounded-[6px] hover:bg-gray-50">
             Next
           </button>
         </div>
