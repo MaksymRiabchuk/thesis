@@ -25,7 +25,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
         ]);
-        $middleware->redirectGuestsTo(fn (Request $request) => route('auth.login'));
+        $middleware->redirectGuestsTo(function (Request $request) {
+            session()->flash('error', 'You are not authorized');
+            return route('auth.login');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (UnauthorizedException $e, Request $request) {

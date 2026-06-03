@@ -4,6 +4,9 @@ import {route} from 'ziggy-js';
 import {computed, ref, watch} from "vue";
 import {PageProps} from "@/types";
 import { LucideSquareArrowRightExit, LucideSearchX, LucideMenu, LucideX } from 'lucide-vue-next';
+import {useFlashMessages} from "@/composables/useFlashMessages";
+
+useFlashMessages();
 const form = useForm('post', route('auth.login'),{});
 const page = usePage<PageProps>();
 const user = page.props.auth.user;

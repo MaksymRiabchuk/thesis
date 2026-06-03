@@ -11,9 +11,6 @@ RUN apt-get update && apt-get install -y \
     default-mysql-client \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
-    && apt-get install -y nodejs
-
 RUN docker-php-ext-install pdo_mysql mysqli mbstring exif pcntl bcmath gd
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

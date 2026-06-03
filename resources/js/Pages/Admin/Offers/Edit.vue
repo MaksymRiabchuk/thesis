@@ -66,6 +66,8 @@ defineOptions({
             <input
                 type="number"
                 placeholder="0.00"
+                min="0"
+                @keydown="(e) => ['-', 'e', 'E', '+'].includes(e.key) && e.preventDefault()"
                 class="w-full px-4 py-2.5 text-[15px] border border-[#e5e7eb] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#3c9f52] focus:border-[#3c9f52] placeholder:text-[#9ca3af] text-[#111827]"
             />
           </div>
@@ -77,6 +79,8 @@ defineOptions({
             <input
                 type="number"
                 placeholder="1"
+                min="0"
+                @keydown="(e) => ['-', 'e', 'E', '+'].includes(e.key) && e.preventDefault()"
                 class="w-full px-4 py-2.5 text-[15px] border border-[#e5e7eb] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#3c9f52] focus:border-[#3c9f52] placeholder:text-[#9ca3af] text-[#111827]"
             />
           </div>

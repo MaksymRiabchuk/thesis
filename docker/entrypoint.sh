@@ -13,12 +13,6 @@ fi
 echo "Installing composer dependencies..."
 composer install --no-interaction --prefer-dist --optimize-autoloader
 
-echo "Installing npm dependencies"
-npm install
-
-echo "Building frontend"
-npm run build
-
 echo "Generating key"
 php artisan key:generate --no-interaction
 

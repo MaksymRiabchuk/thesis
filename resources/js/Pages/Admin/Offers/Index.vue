@@ -30,7 +30,7 @@ const mockOffers = [
       </div>
 
       <Link
-          to="/dashboard/add-offer"
+          :href="route('admin.offers.edit')"
           class="inline-flex items-center px-4 py-2.5 bg-[#369c4e] hover:bg-[#308b45] text-white w-36 lg:w-auto font-medium text-[15px] rounded-xl transition-colors shadow-sm"
       >
         <PlusIcon class="w-5 h-5 mr-1.5"/>
