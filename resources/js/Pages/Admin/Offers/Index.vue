@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {Link} from "@inertiajs/vue3";
 import AdminLayout from "@/Layouts/AdminLayout.vue";
-import {PlusIcon, Edit3Icon} from 'lucide-vue-next';
+import {PlusIcon, Edit3Icon, ArrowLeftIcon} from 'lucide-vue-next';
 
 defineOptions({
   layout: AdminLayout,
@@ -19,6 +19,14 @@ const mockOffers = [
 
 <template>
   <div class="mx-auto space-y-6">
+    <Link
+        :href="route('admin.dashboard')"
+        class="inline-flex items-center gap-1.5 text-[14px] font-medium text-gray-500 hover:text-gray-900 transition-colors"
+    >
+      <ArrowLeftIcon class="w-4 h-4"/>
+      Back
+    </Link>
+
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
         <h1 class="text-2xl font-semibold text-gray-900 tracking-tight">

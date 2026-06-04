@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import {Link} from "@inertiajs/vue3";
 import AdminLayout from "@/Layouts/AdminLayout.vue";
-import {CloudUploadIcon} from 'lucide-vue-next';
+import {CloudUploadIcon, ArrowLeftIcon} from 'lucide-vue-next';
 
 defineOptions({
   layout: AdminLayout,
@@ -9,6 +10,14 @@ defineOptions({
 
 <template>
   <div class="mx-auto space-y-8">
+    <Link
+        :href="route('admin.offers')"
+        class="inline-flex items-center gap-1.5 text-[14px] font-medium text-gray-500 hover:text-gray-900 transition-colors"
+    >
+      <ArrowLeftIcon class="w-4 h-4"/>
+      Back
+    </Link>
+
     <div>
       <h1 class="text-2xl font-semibold text-gray-900 tracking-tight mb-2">
         Create New Offer
