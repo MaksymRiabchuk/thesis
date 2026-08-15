@@ -1,18 +1,5 @@
-const Ziggy = {
-    url: 'http:\/\/localhost',
-    port: null,
-    defaults: {},
-    routes: {
-        'auth.forgot.password': { uri: 'login', methods: ['GET', 'HEAD'] },
-        'storage.local': {
-            uri: 'storage\/{path}',
-            methods: ['GET', 'HEAD'],
-            wheres: { path: '.*' },
-            parameters: ['path'],
-        },
-    },
-};
+const Ziggy = {"url":"http:\/\/localhost:8888","port":8888,"defaults":{},"routes":{"auth.login":{"uri":"login","methods":["GET","HEAD"]},"auth.sign.in":{"uri":"login","methods":["POST"]},"auth.forgot.password":{"uri":"forgot-password","methods":["GET","HEAD"]},"auth.forgot.send.password":{"uri":"forgot-password","methods":["POST"]},"auth.register":{"uri":"register","methods":["GET","HEAD"]},"auth.sign.up":{"uri":"register","methods":["POST"]},"auth.logout":{"uri":"logout","methods":["POST"]},"password.reset":{"uri":"reset-password\/{token}","methods":["GET","HEAD"],"parameters":["token"]},"password.store":{"uri":"reset-password","methods":["POST"]},"admin.home":{"uri":"admin","methods":["GET","HEAD"]},"admin.dashboard":{"uri":"admin\/dashboard","methods":["GET","HEAD"]},"admin.offers":{"uri":"admin\/offers","methods":["GET","HEAD"]},"admin.offers.create":{"uri":"admin\/offers\/create","methods":["GET","HEAD"]},"admin.offers.store":{"uri":"admin\/offers","methods":["POST"]},"admin.offers.edit":{"uri":"admin\/offers\/{offer}\/edit","methods":["GET","HEAD"],"parameters":["offer"],"bindings":{"offer":"id"}},"admin.offers.update":{"uri":"admin\/offers\/{offer}","methods":["PUT"],"parameters":["offer"],"bindings":{"offer":"id"}},"admin.categories":{"uri":"admin\/categories","methods":["GET","HEAD"]},"admin.categories.create":{"uri":"admin\/categories\/create","methods":["GET","HEAD"]},"admin.categories.store":{"uri":"admin\/categories","methods":["POST"]},"admin.categories.edit":{"uri":"admin\/categories\/{category}\/edit","methods":["GET","HEAD"],"parameters":["category"],"bindings":{"category":"id"}},"admin.categories.update":{"uri":"admin\/categories\/{category}","methods":["PUT"],"parameters":["category"],"bindings":{"category":"id"}},"admin.categories.destroy":{"uri":"admin\/categories\/{category}","methods":["DELETE"],"parameters":["category"],"bindings":{"category":"id"}},"storage.local":{"uri":"storage\/{path}","methods":["GET","HEAD"],"wheres":{"path":".*"},"parameters":["path"]},"storage.local.upload":{"uri":"storage\/{path}","methods":["PUT"],"wheres":{"path":".*"},"parameters":["path"]}}};
 if (typeof window !== 'undefined' && typeof window.Ziggy !== 'undefined') {
-    Object.assign(Ziggy.routes, window.Ziggy.routes);
+  Object.assign(Ziggy.routes, window.Ziggy.routes);
 }
 export { Ziggy };

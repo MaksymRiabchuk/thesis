@@ -6,15 +6,37 @@ import {PlusIcon, Edit3Icon, ArrowLeftIcon} from 'lucide-vue-next';
 defineOptions({
   layout: AdminLayout,
 });
-const mockOffers = [
-  {id: 1, title: "Sony A7III Camera", owner: "John Doe", category: "Electronics", price: 45},
-  {id: 2, title: "Mountain Bike (Trek)", owner: "Alice Smith", category: "Sports & Outdoors", price: 20},
-  {id: 3, title: "DJI Mavic Pro", owner: "Robert Johnson", category: "Electronics", price: 35},
-  {id: 4, title: "Camping Tent 4-person", owner: "Emily Davis", category: "Outdoors", price: 15},
-  {id: 5, title: "Bosch Power Drill", owner: "Michael Brown", category: "Tools & Hardware", price: 10},
-  {id: 6, title: "Portable Projector", owner: "Sarah Wilson", category: "Electronics", price: 25},
-];
 
+interface OfferRow {
+  id: number;
+  title: string;
+  price_per_day: string;
+  is_active: boolean;
+  is_published: boolean;
+  user: { id: number; name: string } | null;
+  category: { id: number; name: string } | null;
+}
+
+interface Paginated<T> {
+  data: T[];
+  current_page: number;
+  last_page: number;
+  from: number | null;
+  to: number | null;
+  total: number;
+  prev_page_url: string | null;
+  next_page_url: string | null;
+}
+
+const props = defineProps<{
+  offers: Paginated<OfferRow>;
+}>();
+
+function statusLabel(offer: OfferRow) {
+  if (!offer.is_active) return {text: 'Inactive', class: 'bg-red-100 text-red-700'};
+  if (!offer.is_published) return {text: 'Draft', class: 'bg-gray-100 text-gray-700'};
+  return {text: 'Published', class: 'bg-[#edf7f0] text-[#369c4e]'};
+}
 </script>
 
 <template>
@@ -38,7 +60,7 @@ const mockOffers = [
       </div>
 
       <Link
-          :href="route('admin.offers.edit')"
+          :href="route('admin.offers.create')"
           class="inline-flex items-center px-4 py-2.5 bg-[#369c4e] hover:bg-[#308b45] text-white w-36 lg:w-auto font-medium text-[15px] rounded-xl transition-colors shadow-sm"
       >
         <PlusIcon class="w-5 h-5 mr-1.5"/>
@@ -63,36 +85,51 @@ const mockOffers = [
             <th class="py-4 px-6 text-[13px] font-medium text-gray-500 uppercase tracking-wider">
               Price per Day
             </th>
+            <th class="py-4 px-6 text-[13px] font-medium text-gray-500 uppercase tracking-wider">
+              Status
+            </th>
             <th class="py-4 px-6 text-right text-[13px] font-medium text-gray-500 uppercase tracking-wider">
               Actions
             </th>
           </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
-          <tr key={offer.id} class="hover:bg-gray-50/50 transition-colors" v-for="(offer,) in mockOffers">
+          <tr :key="offer.id" class="hover:bg-gray-50/50 transition-colors" v-for="offer in props.offers.data">
             <td class="py-4 px-6 text-[14px] font-medium text-gray-900">
               {{ offer.title }}
             </td>
             <td class="py-4 px-6 text-[14px] text-gray-600">
-              {{ offer.owner }}
+              {{ offer.user?.name ?? '—' }}
             </td>
             <td class="py-4 px-6">
                 <span
                     class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[12px] font-medium bg-gray-100 text-gray-800">
-                  {{ offer.category }}
+                  {{ offer.category?.name ?? '—' }}
                 </span>
             </td>
             <td class="py-4 px-6 text-[14px] font-medium text-gray-900">
-              ${{ offer.price }}
+              ${{ offer.price_per_day }}
+            </td>
+            <td class="py-4 px-6">
+                <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[12px] font-medium"
+                    :class="statusLabel(offer).class"
+                >
+                  {{ statusLabel(offer).text }}
+                </span>
             </td>
             <td class="py-4 px-6 text-right">
               <Link
                   class="text-gray-800 hover:text-primary ease-in-out transition-colors p-1.5 rounded-md hover:bg-gray-100 cursor-pointer"
-                  :href="route('admin.offers.edit')"
+                  :href="route('admin.offers.edit', offer.id)"
               >
-
                 <Edit3Icon class="w-3 h-3 ml-auto mr-4"/>
               </Link>
+            </td>
+          </tr>
+          <tr v-if="props.offers.data.length === 0">
+            <td colspan="6" class="py-8 px-6 text-center text-[14px] text-gray-500">
+              No offers yet.
             </td>
           </tr>
           </tbody>
@@ -101,17 +138,23 @@ const mockOffers = [
 
       <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex items-center justify-between">
           <span class="text-[13px] text-gray-500">
-            Showing 1 to {{ mockOffers.length }} of {{ mockOffers.length }} results
+            Showing {{ props.offers.from ?? 0 }} to {{ props.offers.to ?? 0 }} of {{ props.offers.total }} results
           </span>
         <div class="flex gap-2">
-          <button
-              class="px-3 py-1 text-[13px] font-medium text-gray-400 bg-white border border-gray-200 rounded-[6px] cursor-not-allowed">
+          <Link
+              :href="props.offers.prev_page_url ?? '#'"
+              :class="props.offers.prev_page_url ? 'text-gray-600 hover:bg-gray-50 cursor-pointer' : 'text-gray-400 cursor-not-allowed pointer-events-none'"
+              class="px-3 py-1 text-[13px] font-medium bg-white border border-gray-200 rounded-[6px]"
+          >
             Previous
-          </button>
-          <button
-              class="px-3 py-1 text-[13px] font-medium cursor-pointer text-gray-600 bg-white border border-gray-200 rounded-[6px] hover:bg-gray-50">
+          </Link>
+          <Link
+              :href="props.offers.next_page_url ?? '#'"
+              :class="props.offers.next_page_url ? 'text-gray-600 hover:bg-gray-50 cursor-pointer' : 'text-gray-400 cursor-not-allowed pointer-events-none'"
+              class="px-3 py-1 text-[13px] font-medium bg-white border border-gray-200 rounded-[6px]"
+          >
             Next
-          </button>
+          </Link>
         </div>
       </div>
     </div>

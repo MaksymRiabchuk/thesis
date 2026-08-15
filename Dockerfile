@@ -13,6 +13,8 @@ RUN apt-get update && apt-get install -y \
 
 RUN docker-php-ext-install pdo_mysql mysqli mbstring exif pcntl bcmath gd
 
+COPY docker/php/opcache-cli.ini /usr/local/etc/php/conf.d/zz-opcache-cli.ini
+
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www

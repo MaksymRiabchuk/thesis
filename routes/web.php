@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CategoriesController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OffersController;
 use App\Http\Controllers\AuthController;
@@ -26,5 +27,17 @@ Route::prefix('/admin')->middleware(['auth'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('admin.home');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/offers', [OffersController::class, 'index'])->name('admin.offers');
-    Route::get('/offers/edit', [OffersController::class, 'edit'])->name('admin.offers.edit');
+    Route::get('/offers/create', [OffersController::class, 'create'])->name('admin.offers.create');
+    Route::post('/offers', [OffersController::class, 'store'])->name('admin.offers.store');
+    Route::get('/offers/{offer}/edit', [OffersController::class, 'edit'])->name('admin.offers.edit');
+    Route::put('/offers/{offer}', [OffersController::class, 'update'])->name('admin.offers.update');
+
+    Route::middleware(['is_admin'])->group(function () {
+        Route::get('/categories', [CategoriesController::class, 'index'])->name('admin.categories');
+        Route::get('/categories/create', [CategoriesController::class, 'create'])->name('admin.categories.create');
+        Route::post('/categories', [CategoriesController::class, 'store'])->name('admin.categories.store');
+        Route::get('/categories/{category}/edit', [CategoriesController::class, 'edit'])->name('admin.categories.edit');
+        Route::put('/categories/{category}', [CategoriesController::class, 'update'])->name('admin.categories.update');
+        Route::delete('/categories/{category}', [CategoriesController::class, 'destroy'])->name('admin.categories.destroy');
+    });
 })->name('admin.index');

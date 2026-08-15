@@ -1,0 +1,13 @@
+.git
+node_modules
+vendor
+storage/app/public
+storage/framework/cache
+storage/framework/sessions
+storage/framework/views
+storage/logs
+public/storage
+public/build
+.env
+.idea
+.vscode

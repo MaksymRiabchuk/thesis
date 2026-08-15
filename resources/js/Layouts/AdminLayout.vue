@@ -30,10 +30,10 @@ const navItems = computed(() => {
       isVisible: true
     },
     {
-      name: "Add Offer",
-      href: route('admin.offers.edit'),
-      isActive: route().current('admin.offers.edit'),
-      isVisible: true
+      name: "Categories",
+      href: route('admin.categories'),
+      isActive: route().current('admin.categories') || route().current('admin.categories.*'),
+      isVisible: user?.role === 'admin'
     },
   ];
 });
