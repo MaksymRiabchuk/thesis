@@ -7,18 +7,24 @@ use App\Http\Requests\Admin\Categories\StoreCategoryRequest;
 use App\Http\Requests\Admin\Categories\UpdateCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class CategoriesController extends Controller
 {
-    public function index(): Response
+    private const PER_PAGE_OPTIONS = [10, 25, 50, 100];
+
+    public function index(Request $request): Response
     {
+        $perPage = $request->integer('per_page', 10);
+        $perPage = in_array($perPage, self::PER_PAGE_OPTIONS, true) ? $perPage : 10;
+
         $categories = Category::query()
             ->withCount('offers')
             ->orderBy('name')
-            ->paginate(10)
+            ->paginate($perPage)
             ->withQueryString();
 
         return Inertia::render('Admin/Categories/Index', [

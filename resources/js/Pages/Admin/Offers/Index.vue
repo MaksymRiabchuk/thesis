@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import {Link} from "@inertiajs/vue3";
 import AdminLayout from "@/Layouts/AdminLayout.vue";
-import {PlusIcon, Edit3Icon, ArrowLeftIcon} from 'lucide-vue-next';
+import Pagination from "@/components/Admin/Pagination.vue";
+import {PlusIcon, ArrowLeftIcon, Edit3Icon} from 'lucide-vue-next';
 
 defineOptions({
   layout: AdminLayout,
@@ -119,12 +120,14 @@ function statusLabel(offer: OfferRow) {
                 </span>
             </td>
             <td class="py-4 px-6 text-right">
-              <Link
-                  class="text-gray-800 hover:text-primary ease-in-out transition-colors p-1.5 rounded-md hover:bg-gray-100 cursor-pointer"
-                  :href="route('admin.offers.edit', offer.id)"
-              >
-                <Edit3Icon class="w-3 h-3 ml-auto mr-4"/>
-              </Link>
+              <div class="flex justify-end items-center gap-1">
+                <Link
+                    class="text-gray-800 hover:text-primary ease-in-out transition-colors p-1.5 rounded-md hover:bg-gray-100 cursor-pointer"
+                    :href="route('admin.offers.edit', offer.id)"
+                >
+                  <Edit3Icon class="w-3 h-3"/>
+                </Link>
+              </div>
             </td>
           </tr>
           <tr v-if="props.offers.data.length === 0">
@@ -136,27 +139,7 @@ function statusLabel(offer: OfferRow) {
         </table>
       </div>
 
-      <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex items-center justify-between">
-          <span class="text-[13px] text-gray-500">
-            Showing {{ props.offers.from ?? 0 }} to {{ props.offers.to ?? 0 }} of {{ props.offers.total }} results
-          </span>
-        <div class="flex gap-2">
-          <Link
-              :href="props.offers.prev_page_url ?? '#'"
-              :class="props.offers.prev_page_url ? 'text-gray-600 hover:bg-gray-50 cursor-pointer' : 'text-gray-400 cursor-not-allowed pointer-events-none'"
-              class="px-3 py-1 text-[13px] font-medium bg-white border border-gray-200 rounded-[6px]"
-          >
-            Previous
-          </Link>
-          <Link
-              :href="props.offers.next_page_url ?? '#'"
-              :class="props.offers.next_page_url ? 'text-gray-600 hover:bg-gray-50 cursor-pointer' : 'text-gray-400 cursor-not-allowed pointer-events-none'"
-              class="px-3 py-1 text-[13px] font-medium bg-white border border-gray-200 rounded-[6px]"
-          >
-            Next
-          </Link>
-        </div>
-      </div>
+      <Pagination :meta="props.offers"/>
     </div>
   </div>
 </template>

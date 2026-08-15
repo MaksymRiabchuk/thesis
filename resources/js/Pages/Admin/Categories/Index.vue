@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {Link, router} from "@inertiajs/vue3";
 import AdminLayout from "@/Layouts/AdminLayout.vue";
+import Pagination from "@/components/Admin/Pagination.vue";
 import {PlusIcon, Edit3Icon, ArrowLeftIcon, Trash2Icon} from 'lucide-vue-next';
 
 defineOptions({
@@ -121,27 +122,7 @@ function destroyCategory(category: CategoryRow) {
         </table>
       </div>
 
-      <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex items-center justify-between">
-          <span class="text-[13px] text-gray-500">
-            Showing {{ props.categories.from ?? 0 }} to {{ props.categories.to ?? 0 }} of {{ props.categories.total }} results
-          </span>
-        <div class="flex gap-2">
-          <Link
-              :href="props.categories.prev_page_url ?? '#'"
-              :class="props.categories.prev_page_url ? 'text-gray-600 hover:bg-gray-50 cursor-pointer' : 'text-gray-400 cursor-not-allowed pointer-events-none'"
-              class="px-3 py-1 text-[13px] font-medium bg-white border border-gray-200 rounded-[6px]"
-          >
-            Previous
-          </Link>
-          <Link
-              :href="props.categories.next_page_url ?? '#'"
-              :class="props.categories.next_page_url ? 'text-gray-600 hover:bg-gray-50 cursor-pointer' : 'text-gray-400 cursor-not-allowed pointer-events-none'"
-              class="px-3 py-1 text-[13px] font-medium bg-white border border-gray-200 rounded-[6px]"
-          >
-            Next
-          </Link>
-        </div>
-      </div>
+      <Pagination :meta="props.categories"/>
     </div>
   </div>
 </template>

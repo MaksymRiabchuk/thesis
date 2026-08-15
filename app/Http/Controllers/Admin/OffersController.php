@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\Offers\UpdateOfferRequest;
 use App\Models\Category;
 use App\Models\Offer;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -15,12 +16,17 @@ use Inertia\Response;
 
 class OffersController extends Controller
 {
-    public function index(): Response
+    private const PER_PAGE_OPTIONS = [10, 25, 50, 100];
+
+    public function index(Request $request): Response
     {
+        $perPage = $request->integer('per_page', 10);
+        $perPage = in_array($perPage, self::PER_PAGE_OPTIONS, true) ? $perPage : 10;
+
         $offers = Offer::query()
             ->with(['user:id,name', 'category:id,name'])
             ->latest()
-            ->paginate(10)
+            ->paginate($perPage)
             ->withQueryString();
 
         return Inertia::render('Admin/Offers/Index', [
