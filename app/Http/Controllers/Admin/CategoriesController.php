@@ -16,19 +16,31 @@ class CategoriesController extends Controller
 {
     private const PER_PAGE_OPTIONS = [10, 25, 50, 100];
 
+    private const SORTABLE_COLUMNS = ['name', 'slug', 'offers_count'];
+
     public function index(Request $request): Response
     {
         $perPage = $request->integer('per_page', 10);
         $perPage = in_array($perPage, self::PER_PAGE_OPTIONS, true) ? $perPage : 10;
 
+        $sort = $request->string('sort')->toString();
+        $direction = $request->string('direction')->toString() === 'desc' ? 'desc' : 'asc';
+        $sortColumn = in_array($sort, self::SORTABLE_COLUMNS, true) ? $sort : null;
+
         $categories = Category::query()
             ->withCount('offers')
-            ->orderBy('name')
+            ->when(
+                $sortColumn,
+                fn ($query) => $query->orderBy($sortColumn, $direction),
+                fn ($query) => $query->orderBy('name')
+            )
             ->paginate($perPage)
             ->withQueryString();
 
         return Inertia::render('Admin/Categories/Index', [
             'categories' => $categories,
+            'sort' => $sortColumn,
+            'direction' => $sortColumn ? $direction : null,
         ]);
     }
 

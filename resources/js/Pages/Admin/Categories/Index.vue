@@ -2,6 +2,7 @@
 import {Link, router} from "@inertiajs/vue3";
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import Pagination from "@/components/Admin/Pagination.vue";
+import SortableTh from "@/components/Admin/SortableTh.vue";
 import {PlusIcon, Edit3Icon, ArrowLeftIcon, Trash2Icon} from 'lucide-vue-next';
 
 defineOptions({
@@ -28,6 +29,8 @@ interface Paginated<T> {
 
 const props = defineProps<{
   categories: Paginated<CategoryRow>;
+  sort?: string | null;
+  direction?: 'asc' | 'desc' | null;
 }>();
 
 function destroyCategory(category: CategoryRow) {
@@ -70,15 +73,9 @@ function destroyCategory(category: CategoryRow) {
         <table class="w-full text-left border-collapse">
           <thead>
           <tr class="border-b border-gray-100 bg-gray-50/50">
-            <th class="py-4 px-6 text-[13px] font-medium text-gray-500 uppercase tracking-wider">
-              Name
-            </th>
-            <th class="py-4 px-6 text-[13px] font-medium text-gray-500 uppercase tracking-wider">
-              Slug
-            </th>
-            <th class="py-4 px-6 text-[13px] font-medium text-gray-500 uppercase tracking-wider">
-              Offers
-            </th>
+            <SortableTh column="name" label="Name" :sort="props.sort" :direction="props.direction"/>
+            <SortableTh column="slug" label="Slug" :sort="props.sort" :direction="props.direction"/>
+            <SortableTh column="offers_count" label="Offers" :sort="props.sort" :direction="props.direction"/>
             <th class="py-4 px-6 text-right text-[13px] font-medium text-gray-500 uppercase tracking-wider">
               Actions
             </th>

@@ -18,19 +18,39 @@ class OffersController extends Controller
 {
     private const PER_PAGE_OPTIONS = [10, 25, 50, 100];
 
+    private const SORTABLE_COLUMNS = [
+        'title' => 'offers.title',
+        'user' => 'users.name',
+        'category' => 'categories.name',
+        'price_per_day' => 'offers.price_per_day',
+    ];
+
     public function index(Request $request): Response
     {
         $perPage = $request->integer('per_page', 10);
         $perPage = in_array($perPage, self::PER_PAGE_OPTIONS, true) ? $perPage : 10;
 
+        $sort = $request->string('sort')->toString();
+        $direction = $request->string('direction')->toString() === 'desc' ? 'desc' : 'asc';
+        $sortColumn = self::SORTABLE_COLUMNS[$sort] ?? null;
+
         $offers = Offer::query()
+            ->select('offers.*')
+            ->leftJoin('users', 'users.id', '=', 'offers.user_id')
+            ->leftJoin('categories', 'categories.id', '=', 'offers.category_id')
             ->with(['user:id,name', 'category:id,name'])
-            ->latest()
+            ->when(
+                $sortColumn,
+                fn ($query) => $query->orderBy($sortColumn, $direction),
+                fn ($query) => $query->latest('offers.created_at')
+            )
             ->paginate($perPage)
             ->withQueryString();
 
         return Inertia::render('Admin/Offers/Index', [
             'offers' => $offers,
+            'sort' => $sortColumn ? $sort : null,
+            'direction' => $sortColumn ? $direction : null,
         ]);
     }
 

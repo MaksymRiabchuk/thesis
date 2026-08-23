@@ -2,6 +2,7 @@
 import {Link} from "@inertiajs/vue3";
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import Pagination from "@/components/Admin/Pagination.vue";
+import SortableTh from "@/components/Admin/SortableTh.vue";
 import {PlusIcon, ArrowLeftIcon, Edit3Icon} from 'lucide-vue-next';
 
 defineOptions({
@@ -31,6 +32,8 @@ interface Paginated<T> {
 
 const props = defineProps<{
   offers: Paginated<OfferRow>;
+  sort?: string | null;
+  direction?: 'asc' | 'desc' | null;
 }>();
 
 function statusLabel(offer: OfferRow) {
@@ -74,18 +77,10 @@ function statusLabel(offer: OfferRow) {
         <table class="w-full text-left border-collapse">
           <thead>
           <tr class="border-b border-gray-100 bg-gray-50/50">
-            <th class="py-4 px-6 text-[13px] font-medium text-gray-500 uppercase tracking-wider">
-              Product Title
-            </th>
-            <th class="py-4 px-6 text-[13px] font-medium text-gray-500 uppercase tracking-wider">
-              User Name
-            </th>
-            <th class="py-4 px-6 text-[13px] font-medium text-gray-500 uppercase tracking-wider">
-              Category
-            </th>
-            <th class="py-4 px-6 text-[13px] font-medium text-gray-500 uppercase tracking-wider">
-              Price per Day
-            </th>
+            <SortableTh column="title" label="Product Title" :sort="props.sort" :direction="props.direction"/>
+            <SortableTh column="user" label="User Name" :sort="props.sort" :direction="props.direction"/>
+            <SortableTh column="category" label="Category" :sort="props.sort" :direction="props.direction"/>
+            <SortableTh column="price_per_day" label="Price per Day" :sort="props.sort" :direction="props.direction"/>
             <th class="py-4 px-6 text-[13px] font-medium text-gray-500 uppercase tracking-wider">
               Status
             </th>
