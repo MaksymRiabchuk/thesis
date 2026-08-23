@@ -28,6 +28,7 @@ Route::prefix('/admin')->middleware(['auth'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('admin.home');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/offers', [OffersController::class, 'index'])->name('admin.offers');
+    Route::get('/offers/personal', [OffersController::class, 'personalOffers'])->name('admin.offers.personal');
     Route::get('/offers/create', [OffersController::class, 'create'])->name('admin.offers.create');
     Route::post('/offers', [OffersController::class, 'store'])->name('admin.offers.store');
     Route::get('/offers/{offer}/edit', [OffersController::class, 'edit'])->name('admin.offers.edit');

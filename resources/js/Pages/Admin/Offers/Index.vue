@@ -34,6 +34,7 @@ const props = defineProps<{
   offers: Paginated<OfferRow>;
   sort?: string | null;
   direction?: 'asc' | 'desc' | null;
+  personalOnly?: boolean;
 }>();
 
 function statusLabel(offer: OfferRow) {
@@ -56,10 +57,14 @@ function statusLabel(offer: OfferRow) {
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
         <h1 class="text-2xl font-semibold text-gray-900 tracking-tight">
-          Current Offers
+          {{ props.personalOnly ? 'My Offers' : 'Current Offers' }}
         </h1>
         <p class="text-gray-500 text-[15px] mt-1">
-          Manage all available product listings in the system.
+          {{
+            props.personalOnly
+                ? 'Manage the product listings you have created.'
+                : 'Manage all available product listings in the system.'
+          }}
         </p>
       </div>
 
@@ -78,7 +83,7 @@ function statusLabel(offer: OfferRow) {
           <thead>
           <tr class="border-b border-gray-100 bg-gray-50/50">
             <SortableTh column="title" label="Product Title" :sort="props.sort" :direction="props.direction"/>
-            <SortableTh column="user" label="User Name" :sort="props.sort" :direction="props.direction"/>
+            <SortableTh v-if="!props.personalOnly" column="user" label="User Name" :sort="props.sort" :direction="props.direction"/>
             <SortableTh column="category" label="Category" :sort="props.sort" :direction="props.direction"/>
             <SortableTh column="price_per_day" label="Price per Day" :sort="props.sort" :direction="props.direction"/>
             <th class="py-4 px-6 text-[13px] font-medium text-gray-500 uppercase tracking-wider">
@@ -94,7 +99,7 @@ function statusLabel(offer: OfferRow) {
             <td class="py-4 px-6 text-[14px] font-medium text-gray-900">
               {{ offer.title }}
             </td>
-            <td class="py-4 px-6 text-[14px] text-gray-600">
+            <td v-if="!props.personalOnly" class="py-4 px-6 text-[14px] text-gray-600">
               {{ offer.user?.name ?? '—' }}
             </td>
             <td class="py-4 px-6">
@@ -126,7 +131,7 @@ function statusLabel(offer: OfferRow) {
             </td>
           </tr>
           <tr v-if="props.offers.data.length === 0">
-            <td colspan="6" class="py-8 px-6 text-center text-[14px] text-gray-500">
+            <td :colspan="props.personalOnly ? 5 : 6" class="py-8 px-6 text-center text-[14px] text-gray-500">
               No offers yet.
             </td>
           </tr>

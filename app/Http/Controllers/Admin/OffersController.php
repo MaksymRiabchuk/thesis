@@ -27,6 +27,29 @@ class OffersController extends Controller
 
     public function index(Request $request): Response
     {
+        [$offers, $sort, $direction] = $this->paginateOffers($request);
+
+        return Inertia::render('Admin/Offers/Index', [
+            'offers' => $offers,
+            'sort' => $sort,
+            'direction' => $direction,
+        ]);
+    }
+
+    public function personalOffers(Request $request): Response
+    {
+        [$offers, $sort, $direction] = $this->paginateOffers($request, $request->user()->id);
+
+        return Inertia::render('Admin/Offers/Index', [
+            'offers' => $offers,
+            'sort' => $sort,
+            'direction' => $direction,
+            'mineOnly' => true,
+        ]);
+    }
+
+    private function paginateOffers(Request $request, ?int $userId = null): array
+    {
         $perPage = $request->integer('per_page', 10);
         $perPage = in_array($perPage, self::PER_PAGE_OPTIONS, true) ? $perPage : 10;
 
@@ -39,6 +62,7 @@ class OffersController extends Controller
             ->leftJoin('users', 'users.id', '=', 'offers.user_id')
             ->leftJoin('categories', 'categories.id', '=', 'offers.category_id')
             ->with(['user:id,name', 'category:id,name'])
+            ->when($userId, fn ($query) => $query->where('offers.user_id', $userId))
             ->when(
                 $sortColumn,
                 fn ($query) => $query->orderBy($sortColumn, $direction),
@@ -47,11 +71,7 @@ class OffersController extends Controller
             ->paginate($perPage)
             ->withQueryString();
 
-        return Inertia::render('Admin/Offers/Index', [
-            'offers' => $offers,
-            'sort' => $sortColumn ? $sort : null,
-            'direction' => $sortColumn ? $direction : null,
-        ]);
+        return [$offers, $sortColumn ? $sort : null, $sortColumn ? $direction : null];
     }
 
     public function create(): Response
