@@ -35,6 +35,12 @@ const navItems = computed(() => {
       isActive: route().current('admin.categories') || route().current('admin.categories.*'),
       isVisible: user?.role === 'admin'
     },
+    {
+      name: "FAQ",
+      href: route('admin.faqs'),
+      isActive: route().current('admin.faqs') || route().current('admin.faqs.*'),
+      isVisible: user?.role === 'admin'
+    },
   ];
 });
 

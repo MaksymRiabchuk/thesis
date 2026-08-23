@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CategoriesController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\FaqsController;
 use App\Http\Controllers\Admin\OffersController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TestController;
@@ -39,5 +40,12 @@ Route::prefix('/admin')->middleware(['auth'])->group(function () {
         Route::get('/categories/{category}/edit', [CategoriesController::class, 'edit'])->name('admin.categories.edit');
         Route::put('/categories/{category}', [CategoriesController::class, 'update'])->name('admin.categories.update');
         Route::delete('/categories/{category}', [CategoriesController::class, 'destroy'])->name('admin.categories.destroy');
+
+        Route::get('/faqs', [FaqsController::class, 'index'])->name('admin.faqs');
+        Route::get('/faqs/create', [FaqsController::class, 'create'])->name('admin.faqs.create');
+        Route::post('/faqs', [FaqsController::class, 'store'])->name('admin.faqs.store');
+        Route::get('/faqs/{faq}/edit', [FaqsController::class, 'edit'])->name('admin.faqs.edit');
+        Route::put('/faqs/{faq}', [FaqsController::class, 'update'])->name('admin.faqs.update');
+        Route::delete('/faqs/{faq}', [FaqsController::class, 'destroy'])->name('admin.faqs.destroy');
     });
 })->name('admin.index');
