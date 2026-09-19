@@ -46,6 +46,11 @@ class Offer extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function rentals(): HasMany
+    {
+        return $this->hasMany(Rental::class);
+    }
+
     public function images(): HasMany
     {
         return $this->hasMany(OfferImage::class)->orderBy('sort_order');

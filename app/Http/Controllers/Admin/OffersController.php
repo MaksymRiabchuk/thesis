@@ -2,13 +2,21 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enum\RentalStatus;
+use App\Exceptions\RentalException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Offers\OrderOfferRequest;
 use App\Http\Requests\Admin\Offers\StoreOfferRequest;
 use App\Http\Requests\Admin\Offers\UpdateOfferRequest;
 use App\Models\Category;
 use App\Models\Offer;
+use App\Models\Rental;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -17,6 +25,8 @@ use Inertia\Response;
 class OffersController extends Controller
 {
     private const PER_PAGE_OPTIONS = [10, 25, 50, 100];
+
+    private const RENTAL_DAYS = 2;
 
     private const SORTABLE_COLUMNS = [
         'title' => 'offers.title',
@@ -81,6 +91,64 @@ class OffersController extends Controller
             'offer' => null,
         ]);
     }
+
+    public function order(OrderOfferRequest $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        try {
+            DB::transaction(function () use ($request, $user) {
+                $offer = Offer::whereKey($request->validated('offer_id'))->lockForUpdate()->firstOrFail();
+
+                if (! $offer->is_active) {
+                    throw new RentalException('Offer is inactive.');
+                }
+                if (! $offer->is_published) {
+                    throw new RentalException('Offer is not published.');
+                }
+                if ($offer->user_id === $user->id) {
+                    throw new RentalException('You cannot rent your own offer.');
+                }
+
+                $startsAt = now();
+                $endsAt = $startsAt->copy()->addDays(self::RENTAL_DAYS);
+
+                $booked = (int) Rental::where('offer_id', $offer->id)
+                    ->whereIn('status', RentalStatus::blocking())
+                    ->where('starts_at', '<', $endsAt)
+                    ->where('ends_at', '>', $startsAt)
+                    ->sum('quantity');
+
+                if ($booked + 1 > $offer->quantity) {
+                    throw new RentalException('Offer is not available for the selected period.');
+                }
+
+                Rental::create([
+                    'offer_id' => $offer->id,
+                    'renter_id' => $user->id,
+                    'owner_id' => $offer->user_id,
+                    'starts_at' => $startsAt,
+                    'ends_at' => $endsAt,
+                    'days' => self::RENTAL_DAYS,
+                    'quantity' => 1,
+                    'price_per_day' => $offer->price_per_day,
+                    'total_amount' => bcmul((string) $offer->price_per_day, (string) self::RENTAL_DAYS, 2),
+                    'currency' => 'USD',
+                    'status' => RentalStatus::CONFIRMED->value,
+                ]);
+            });
+        } catch (RentalException $exception) {
+            return $this->errorMessage($exception->getMessage(), [], 'admin.offers');
+        } catch (ModelNotFoundException) {
+            return $this->errorMessage('Offer not found.', [], 'admin.offers');
+        } catch (Exception $exception) {
+            Log::error('OffersController order: ' . $exception->getMessage());
+            return $this->errorMessage('Could not rent the offer.', [], 'admin.offers');
+        }
+
+        return $this->successMessage('Offer rented for ' . self::RENTAL_DAYS . ' days.', 'admin.offers');
+    }
+
 
     public function edit(Offer $offer): Response
     {

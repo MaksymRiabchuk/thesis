@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import {Link} from "@inertiajs/vue3";
+import {Link, router, usePage} from "@inertiajs/vue3";
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import Pagination from "@/components/Admin/Pagination.vue";
 import SortableTh from "@/components/Admin/SortableTh.vue";
-import {PlusIcon, ArrowLeftIcon, Edit3Icon} from 'lucide-vue-next';
+import {PlusIcon, ArrowLeftIcon, Edit3Icon, CalendarCheckIcon} from 'lucide-vue-next';
+import {PageProps} from "@/types";
 
 defineOptions({
   layout: AdminLayout,
@@ -11,6 +12,7 @@ defineOptions({
 
 interface OfferRow {
   id: number;
+  user_id: number;
   title: string;
   price_per_day: string;
   is_active: boolean;
@@ -36,6 +38,17 @@ const props = defineProps<{
   direction?: 'asc' | 'desc' | null;
   personalOnly?: boolean;
 }>();
+
+const currentUserId = usePage<PageProps>().props.auth.user?.id;
+
+function canRent(offer: OfferRow) {
+  return offer.is_active && offer.is_published && offer.user_id !== currentUserId;
+}
+
+function rent(offer: OfferRow) {
+  if (!confirm(`Rent "${offer.title}" for 2 days ($${(Number(offer.price_per_day) * 2).toFixed(2)})?`)) return;
+  router.post(route('admin.offers.order'), {offer_id: offer.id}, {preserveScroll: true});
+}
 
 function statusLabel(offer: OfferRow) {
   if (!offer.is_active) return {text: 'Inactive', class: 'bg-red-100 text-red-700'};
@@ -121,6 +134,15 @@ function statusLabel(offer: OfferRow) {
             </td>
             <td class="py-4 px-6 text-right">
               <div class="flex justify-end items-center gap-1">
+                <button
+                    v-if="canRent(offer)"
+                    type="button"
+                    @click="rent(offer)"
+                    class="inline-flex items-center gap-1 px-2.5 py-1 text-[12px] font-medium text-[#369c4e] bg-[#edf7f0] hover:bg-[#dcefe2] rounded-md transition-colors cursor-pointer"
+                >
+                  <CalendarCheckIcon class="w-3 h-3"/>
+                  Rent
+                </button>
                 <Link
                     class="text-gray-800 hover:text-primary ease-in-out transition-colors p-1.5 rounded-md hover:bg-gray-100 cursor-pointer"
                     :href="route('admin.offers.edit', offer.id)"
